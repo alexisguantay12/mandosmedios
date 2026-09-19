@@ -1,0 +1,14 @@
+.env
+.env.local
+.env.*.local
+.venv/
+node_modules/
+.next/
+__pycache__/
+*.pyc
+*.sqlite3
+staticfiles/
+playwright-report/
+test-results/
+.ruff_cache/
+*.log

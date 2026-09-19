@@ -1,0 +1,47 @@
+{
+  "columnas": {
+    "id_origen": "ID histórico",
+    "titulo": "Título",
+    "descripcion": "Problema planteado",
+    "impacto": "Impacto",
+    "tipo": "Tipo de planteo",
+    "area_origen": "Área/sector",
+    "areas_involucradas": "Áreas involucradas",
+    "responsable": "Responsable confirmado",
+    "estado": "Estado",
+    "fecha_creacion": "Marca temporal",
+    "fecha_resolucion": "Fecha de resolución",
+    "remitente": "Remitente"
+  },
+  "comentarios": [
+    "Soluciones propuestas",
+    "Comentarios",
+    "Seguimiento histórico"
+  ],
+  "predeterminados": {
+    "prioridad": "Media",
+    "tipo": "Problema",
+    "estado": "Nuevo"
+  },
+  "valores": {
+    "tipo": {
+      "Problema": "Problema",
+      "Tema informativo": "Tema Informativo",
+      "Informativo": "Tema Informativo"
+    },
+    "estado": {
+      "Nuevo": "nuevo",
+      "Pendiente": "nuevo",
+      "En curso": "en-curso",
+      "En proceso": "en-curso",
+      "Resuelto": "resuelto",
+      "Finalizado": "resuelto"
+    },
+    "prioridad": {
+      "Alta": "alta",
+      "Media": "media",
+      "Baja": "baja"
+    }
+  },
+  "separador_areas": ";"
+}
