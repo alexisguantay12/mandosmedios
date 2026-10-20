@@ -74,7 +74,7 @@ h1 {
   font-size: clamp(25px, 2.3vw, 34px);
   line-height: 1.2;
   letter-spacing: -0.8px;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   font-weight: 700;
 }
 h2 {
@@ -791,17 +791,17 @@ legend {
   color: var(--color-text);
   box-shadow: var(--shadow-modal);
 
-  width: min(1650px, 94vw);
-  height: 92dvh;
-  max-height: 92dvh;
+  width: min(1500px, 90vw);
+  height: 88dvh;
+  max-height: 88dvh;
 
   overflow: hidden;
   background: white;
 }
 .detail-modal {
-  width: min(1650px, 94vw);
-  height: 92dvh;
-  max-height: 92dvh;
+  width: min(1500px, 90vw);
+  height: 88dvh;
+  max-height: 88dvh;
 }
 
 .detail-modal .topic-detail {
@@ -1011,9 +1011,9 @@ input[type="radio"] {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 62px;
-  padding: 12px 25px;
-  padding-right: 65px;
+  min-height: 56px;
+  padding: 10px 22px;
+  padding-right: 62px;
   border-bottom: 1px solid #e0e8f2;
 }
 .detail-toolbar .small-button {
@@ -1021,15 +1021,15 @@ input[type="radio"] {
 }
 .detail-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr);
+  grid-template-columns: minmax(0, 1.18fr) minmax(520px, 1fr);
 }
 .detail-main {
-  padding: 30px;
+  padding: 25px 27px;
   min-width: 0;
 }
 .detail-title {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: flex-start;
 }
 .detail-title > div {
@@ -1037,10 +1037,11 @@ input[type="radio"] {
   min-width: 0;
 }
 .detail-title h1 {
-  font-size: 25px;
-  letter-spacing: -0.5px;
+  font-size: 23px;
+  letter-spacing: -0.4px;
   overflow-wrap: anywhere;
-  margin-top: 5px;
+  margin-top: 3px;
+  margin-bottom: 6px;
 }
 .detail-title p {
   font-size: 11px;
@@ -1051,23 +1052,23 @@ input[type="radio"] {
   letter-spacing: 0.7px;
 }
 .detail-title .priority {
-  margin-top: 9px;
+  margin-top: 7px;
 }
 .detail-main > .badges {
-  margin: 22px 0 12px 63px;
+  margin: 17px 0 8px 56px;
 }
 .text-section {
-  padding: 24px 0;
+  padding: 19px 0;
   border-bottom: 1px solid #e5ebf3;
 }
 .text-section h2 {
   font-size: 13px;
-  margin-bottom: 13px;
+  margin-bottom: 9px;
 }
 .text-section p {
   color: #425a77;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.65;
   margin-bottom: 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -1075,8 +1076,8 @@ input[type="radio"] {
 .metadata {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  margin: 25px 0 0;
+  gap: 19px 24px;
+  margin: 20px 0 0;
 }
 .metadata dt {
   font-size: 11px;
@@ -1091,8 +1092,8 @@ input[type="radio"] {
 }
 .state-change {
   border-top: 1px solid #e5ebf3;
-  margin-top: 28px;
-  padding-top: 22px;
+  margin-top: 22px;
+  padding-top: 18px;
 }
 .state-panel {
   padding: 18px;
@@ -1182,7 +1183,7 @@ input[type="radio"] {
   font-size: 12px;
   line-height: 1.7;
   color: #526987;
-  margin: 7px 0 0;
+  margin: 5px 0 0;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -2005,9 +2006,9 @@ input[type="radio"] {
 /* -------------------------------------------------------------------------- */
 
 .detail-modal {
-  width: min(1650px, 94vw);
-  height: 92dvh;
-  max-height: 92dvh;
+  width: min(1500px, 90vw);
+  height: 88dvh;
+  max-height: 88dvh;
   overflow: hidden;
 }
 
@@ -2582,4 +2583,746 @@ input[type="radio"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+
+/* ==========================================================
+   TOPIC DETAIL FINAL
+   ========================================================== */
+
+
+/* ==========================================================
+   PANEL DERECHO
+   ========================================================== */
+
+.discussion {
+  min-width: 0;
+
+  padding: 20px 23px;
+
+  background: #f7f9fc;
+
+  border-left: 1px solid #e0e7f0;
+}
+
+
+/* ==========================================================
+   TABS
+   ========================================================== */
+
+.discussion-tabs {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 0 0 14px;
+
+  padding: 0 0 11px;
+
+  border-bottom: 1px solid #dde6f0;
+}
+
+
+.discussion-tabs button {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 38px;
+
+  padding: 8px 12px;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #657991;
+
+  font-size: 12px;
+}
+
+
+.discussion-tabs button.active {
+  background: #e5eef9;
+
+  color: #1f4770;
+
+  font-weight: 600;
+}
+
+
+.tab-count {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 6px;
+
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #346da9;
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   TARJETA DE NUEVA INTERVENCIÓN
+   ========================================================== */
+
+.comment-composer {
+  display: block;
+
+  width: 100%;
+
+  margin: 0 0 10px;
+
+  padding: 14px;
+
+  background: #fff;
+
+  border: 1px solid #d9e3ef;
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 2px 8px
+    rgba(24, 49, 80, 0.04);
+}
+
+
+.comment-composer-title {
+  margin-bottom: 9px;
+
+  color: #173451;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   SELECT + AYUDA
+   ========================================================== */
+
+.comment-type-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(210px, 1fr);
+
+  gap: 10px;
+
+  align-items: end;
+
+  margin-bottom: 9px;
+}
+
+
+.comment-type-select {
+  display: block;
+
+  min-width: 0;
+
+  margin: 0;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+}
+
+
+.comment-type-select > span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #203b5a;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+.comment-type-select select {
+  display: block;
+
+  width: 100%;
+
+  height: 39px;
+
+  min-height: 39px;
+
+  margin: 0;
+
+  padding: 0 38px 0 12px;
+
+  border: 1px solid #cad8e8;
+
+  border-radius: 7px;
+
+  background: #fff;
+
+  color: #203a58;
+
+  font-size: 12px;
+
+  outline: none;
+
+  box-shadow: none;
+}
+
+
+.comment-type-select select:focus,
+.comment-type-select select:focus-visible {
+  outline: none;
+
+  border-color: #8db3e5;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(8, 102, 237, 0.08);
+}
+
+
+/* ==========================================================
+   AYUDA CONTEXTUAL
+   ========================================================== */
+
+.comment-type-help {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  min-width: 0;
+
+  min-height: 39px;
+
+  padding: 7px 10px;
+
+  border-radius: 7px;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+.comment-type-help svg {
+  flex: 0 0 auto;
+}
+
+
+.comment-type-help span {
+  min-width: 0;
+}
+
+
+.comment-type-help.comment {
+  background: #eef3f8;
+
+  color: #637991;
+}
+
+
+.comment-type-help.solution {
+  background: #e9f3ff;
+
+  color: #266bc4;
+}
+
+
+.comment-type-help.agreement {
+  background: #e9f6ef;
+
+  color: #247454;
+}
+
+
+.comment-type-help.followup {
+  background: #fff4df;
+
+  color: #986417;
+}
+
+
+/* ==========================================================
+   TEXTAREA
+   ========================================================== */
+
+.comment-textarea-box {
+  position: relative;
+
+  width: 100%;
+}
+
+
+.comment-textarea-box textarea {
+  display: block;
+
+  width: 100%;
+
+  height: 88px;
+
+  min-height: 88px;
+
+  margin: 0;
+
+  padding:
+    10px
+    12px
+    23px;
+
+  border: 1px solid #cad8e8;
+
+  border-radius: 7px;
+
+  background: #fff;
+
+  color: #294361;
+
+  font-size: 12px;
+
+  line-height: 1.55;
+
+  resize: vertical;
+
+  outline: none;
+
+  box-shadow: none;
+}
+
+
+.comment-textarea-box textarea:focus,
+.comment-textarea-box textarea:focus-visible {
+  outline: none;
+
+  border-color: #83afe7;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(8, 102, 237, 0.08);
+}
+
+
+.comment-textarea-box textarea::placeholder {
+  color: #8799b1;
+}
+
+
+.comment-counter {
+  position: absolute;
+
+  right: 10px;
+
+  bottom: 7px;
+
+  color: #8192a8;
+
+  font-size: 9px;
+
+  pointer-events: none;
+}
+
+
+/* ==========================================================
+   PIE DEL FORM
+   ========================================================== */
+
+.comment-composer-footer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-top: 9px;
+}
+
+
+.comment-author-help {
+  color: #8293a9;
+
+  font-size: 9px;
+
+  line-height: 1.4;
+}
+
+
+.comment-composer-footer .button {
+  flex-shrink: 0;
+
+  min-height: 37px;
+
+  padding: 7px 14px;
+
+  font-size: 11px;
+}
+
+
+/* ==========================================================
+   TIMELINE
+   ========================================================== */
+
+.detail-timeline {
+  display: block;
+}
+
+
+.detail-timeline-item {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 13px 3px;
+
+  border-bottom: 1px solid #e3eaf2;
+}
+
+
+.detail-timeline-item:last-child {
+  border-bottom: 0;
+}
+
+
+.detail-timeline-item > .avatar {
+  width: 29px;
+
+  height: 29px;
+
+  flex-shrink: 0;
+
+  margin-top: 1px;
+
+  font-size: 9px;
+}
+
+
+.detail-timeline-content {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.detail-timeline-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+.detail-timeline-user {
+  min-width: 0;
+}
+
+
+.detail-timeline-user strong {
+  display: block;
+
+  color: #193554;
+
+  font-size: 11px;
+
+  line-height: 1.3;
+}
+
+
+.detail-timeline-meta {
+  display: flex;
+
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  margin-top: 2px;
+
+  color: #71859d;
+
+  font-size: 9px;
+}
+
+
+.detail-timeline-content p {
+  margin: 5px 0 0;
+
+  color: #344f6e;
+
+  font-size: 10.5px;
+
+  line-height: 1.55;
+
+  white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* ==========================================================
+   BADGES
+   ========================================================== */
+
+.comment-type-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+
+  border-radius: 7px;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  line-height: 1.25;
+}
+
+
+.comment-type-badge.comment {
+  background: #edf2f6;
+
+  color: #64788f;
+}
+
+
+.comment-type-badge.solution {
+  background: #e8f2ff;
+
+  color: #286dcc;
+}
+
+
+.comment-type-badge.agreement {
+  background: #e7f5ed;
+
+  color: #247653;
+}
+
+
+.comment-type-badge.followup {
+  background: #fff2dc;
+
+  color: #996516;
+}
+
+
+/* ==========================================================
+   HISTÓRICO
+   ========================================================== */
+
+.historical-label {
+  display: inline-block;
+
+  margin-top: 6px;
+
+  color: #8c7393;
+
+  font-size: 8px;
+}
+
+
+/* ==========================================================
+   ACTIVIDAD
+   ========================================================== */
+
+.change-values {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 6px;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+}
+
+
+.change-values > span:first-child {
+  color: #8691a2;
+}
+
+
+.change-values strong {
+  color: #2866b4;
+
+  font-weight: 500;
+}
+
+
+/* ==========================================================
+   VACÍO
+   ========================================================== */
+
+.detail-timeline-empty {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  min-height: 145px;
+
+  padding: 24px;
+
+  color: #8495aa;
+
+  text-align: center;
+}
+
+
+.detail-timeline-empty svg {
+  color: #95a7bb;
+}
+
+
+.detail-timeline-empty strong {
+  color: #687d96;
+
+  font-size: 11px;
+}
+
+
+.detail-timeline-empty span {
+  max-width: 285px;
+
+  color: #8798ad;
+
+  font-size: 10px;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================================
+   SCROLL
+   ========================================================== */
+
+.detail-modal .discussion {
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #aebbc9
+    transparent;
+}
+
+
+.detail-modal .discussion::-webkit-scrollbar {
+  width: 6px;
+}
+
+
+.detail-modal .discussion::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+.detail-modal .discussion::-webkit-scrollbar-thumb {
+  background: #aebbc9;
+
+  border-radius: 10px;
+}
+
+
+/* ==========================================================
+   NOTEBOOK
+   ========================================================== */
+
+@media (max-width: 1350px) and (min-width: 1024px) {
+
+  .detail-layout {
+    grid-template-columns:
+      minmax(0, 1.08fr)
+      minmax(480px, 1fr);
+  }
+
+}
+
+
+/* ==========================================================
+   TABLET / MOVIL
+   ========================================================== */
+
+@media (max-width: 1023px) {
+
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .discussion {
+    border-left: 0;
+
+    border-top: 1px solid #e0e7f0;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .discussion {
+    padding: 18px;
+  }
+
+  .comment-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comment-composer-footer {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .comment-composer-footer .button {
+    width: 100%;
+  }
+
+  .detail-timeline-header {
+    gap: 7px;
+  }
+
 }

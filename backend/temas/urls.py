@@ -9,6 +9,7 @@ router.register("areas", views.AreaViewSet)
 router.register("tipos", views.TipoViewSet)
 router.register("estados", views.EstadoViewSet)
 router.register("responsables", views.ResponsableViewSet)
+router.register("reuniones",views.ReunionViewSet,basename="reunion")
 urlpatterns = [
     path("auth/csrf/", views.CsrfView.as_view()),
     path("auth/login/", views.LoginView.as_view()),

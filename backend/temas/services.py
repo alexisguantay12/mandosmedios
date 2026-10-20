@@ -115,13 +115,14 @@ def modificar_tema(tema_id, datos, usuario, version):
 
 
 @transaction.atomic
-def agregar_comentario(tema_id, usuario, texto, *, historico=False):
+def agregar_comentario(tema_id, usuario, texto, *,tipo=Comentario.Tipo.COMENTARIO, historico=False):
     tema = Tema.objects.select_for_update().get(pk=tema_id)
     comentario = Comentario.objects.create(
         tema=tema,
         usuario=usuario,
         texto=texto,
         es_historico=historico,
+        tipo=tipo,
     )
     # El comentario es una entidad humana separada; no se duplica como actividad.
     tema.version += 1

@@ -12,8 +12,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
-
-from .models import Area, Estado, Responsable, Tema, TipoTema
+from rest_framework.permissions import IsAuthenticated
+from .minutas import generar_datos_minuta
+from .models import Area, Estado, Responsable, Tema, TipoTema,Comentario, Reunion,AsistenciaReunion
 from .serializers import (
     ActividadSerializer,
     AreaSerializer,
@@ -25,9 +26,28 @@ from .serializers import (
     TemaSerializer,
     TipoSerializer,
     UsuarioSerializer,
+    ReunionSerializer,
+    AsistenciaReunionSerializer
 )
 from .services import agregar_comentario, crear_tema, modificar_tema
+from django.db import transaction
 
+from rest_framework import (
+    mixins,
+    viewsets,
+    status,
+)
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+ 
+from .minutas import generar_datos_minuta 
+
+from django.http import FileResponse
+from django.utils.text import slugify
+from django.utils import timezone
+
+from .minutas_documentos import generar_word, generar_pdf
 
 @method_decorator(never_cache, name="dispatch")
 class CsrfView(APIView):
@@ -233,7 +253,13 @@ class TemaViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
             serializer = ComentarioSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             comentario = agregar_comentario(
-                tema.pk, request.user, serializer.validated_data["texto"]
+                tema_id=tema.pk,
+                usuario=request.user,
+                texto=serializer.validated_data["texto"],
+                tipo=serializer.validated_data.get(
+                    "tipo",
+                    Comentario.Tipo.COMENTARIO,
+                ),
             )
             return Response(ComentarioSerializer(comentario).data, status=201)
         page = self.paginate_queryset(tema.comentarios.select_related("usuario").all())
@@ -244,3 +270,269 @@ class TemaViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gen
         tema = self.get_object()
         page = self.paginate_queryset(tema.actividades.select_related("usuario").all())
         return self.get_paginated_response(ActividadSerializer(page, many=True).data)
+
+
+
+
+
+
+
+class ReunionViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = ReunionSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return (
+            Reunion.objects
+            .select_related("moderador")
+            .prefetch_related(
+                "asistencias__responsable"
+            )
+            .order_by("-fecha", "-id")
+        )
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        reunion = serializer.save()
+
+        responsables = Responsable.objects.filter(activo=True)
+
+        AsistenciaReunion.objects.bulk_create([
+            AsistenciaReunion(
+                reunion=reunion,
+                responsable=responsable,
+                condicion=AsistenciaReunion.Condicion.SIN_REGISTRAR,
+                motivo_ausencia="",
+            )
+            for responsable in responsables
+        ])
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="minuta"
+    )
+    def minuta(self, request, pk=None):
+        reunion = self.get_object()
+
+        if reunion.estado_minuta == "confirmada":
+            if reunion.minuta_contenido is None:
+                return Response(
+                    {
+                        "detail": (
+                            "La reunión está confirmada, "
+                            "pero no tiene una minuta guardada."
+                        )
+                    },
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+            return Response(reunion.minuta_contenido)
+
+        try:
+            resultado = generar_datos_minuta(reunion)
+        except ValueError as exc:
+            raise ValidationError({
+                "horario": str(exc)
+            })
+
+        return Response(resultado)
+    
+    # ----------------------------------------------
+    # DESCARGAR MINUTA EN WORD
+    # ----------------------------------------------
+
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="word",
+    )
+    def descargar_word(self, request, pk=None):
+        reunion = self.get_object()
+
+        try:
+            archivo = generar_word(reunion)
+        except ValueError as exc:
+            raise ValidationError({"detail": str(exc)})
+
+        fecha = timezone.localtime(
+            reunion.fecha
+        ).strftime("%Y-%m-%d")
+
+        titulo = slugify(reunion.titulo) or "reunion"
+
+        nombre = (
+            f"Minuta_Mandos_Medios_{fecha}_{titulo}.docx"
+        )
+
+        return FileResponse(
+            archivo,
+            as_attachment=True,
+            filename=nombre,
+            content_type=(
+                "application/vnd.openxmlformats-officedocument."
+                "wordprocessingml.document"
+            ),
+        )
+
+    # ----------------------------------------------
+    # DESCARGAR MINUTA EN PDF
+    # ----------------------------------------------
+
+    @action(
+        detail=True,
+        methods=["get"],
+        url_path="pdf",
+    )
+    def descargar_pdf(self, request, pk=None):
+        reunion = self.get_object()
+
+        try:
+            archivo = generar_pdf(reunion)
+        except ValueError as exc:
+            raise ValidationError({"detail": str(exc)})
+
+        fecha = timezone.localtime(
+            reunion.fecha
+        ).strftime("%Y-%m-%d")
+
+        titulo = slugify(reunion.titulo) or "reunion"
+
+        nombre = (
+            f"Minuta_Mandos_Medios_{fecha}_{titulo}.pdf"
+        )
+
+        return FileResponse(
+            archivo,
+            as_attachment=True,
+            filename=nombre,
+            content_type="application/pdf",
+        )
+
+    @action(
+        detail=True,
+        methods=["get", "put"],
+        url_path="asistencias",
+    )
+    def asistencias(self, request, pk=None):
+        reunion = self.get_object()
+
+        if request.method == "GET":
+            registros = (
+                reunion.asistencias
+                .select_related("responsable")
+                .order_by("responsable__nombre")
+            )
+
+            serializer = AsistenciaReunionSerializer(
+                registros,
+                many=True,
+            )
+
+            return Response({
+                "reunion_id": reunion.id,
+                "total": registros.count(),
+                "presentes": registros.filter(
+                    condicion="presente"
+                ).count(),
+                "ausentes": registros.filter(
+                    condicion="ausente"
+                ).count(),
+                "asistencias": serializer.data,
+            })
+
+        if reunion.estado_minuta == "confirmada":
+            raise ValidationError({
+                "detail": (
+                    "No se puede modificar la asistencia "
+                    "de una reunión confirmada."
+                )
+            })
+
+        if (
+            request.user != reunion.moderador
+            and not request.user.is_staff
+        ):
+            raise PermissionDenied(
+                "Solo el moderador o un administrador "
+                "puede modificar la asistencia."
+            )
+
+        datos = request.data.get("asistencias")
+
+        if not isinstance(datos, list):
+            raise ValidationError({
+                "asistencias": "Se esperaba una lista."
+            })
+
+        serializer = AsistenciaReunionSerializer(
+            data=datos,
+            many=True,
+        )
+        serializer.is_valid(raise_exception=True)
+
+        validados = serializer.validated_data
+
+        ids = [
+            item["responsable"].pk
+            for item in validados
+        ]
+
+        if len(ids) != len(set(ids)):
+            raise ValidationError({
+                "asistencias": (
+                    "Hay responsables duplicados."
+                )
+            })
+
+        with transaction.atomic():
+            reunion = (
+                Reunion.objects
+                .select_for_update()
+                .get(pk=reunion.pk)
+            )
+
+            if reunion.estado_minuta == "confirmada":
+                raise ValidationError({
+                    "detail": "La reunión ya está confirmada."
+                })
+
+            if (
+                request.user != reunion.moderador
+                and not request.user.is_staff
+            ):
+                raise PermissionDenied(
+                    "No tiene permisos para esta operación."
+                )
+
+            AsistenciaReunion.objects.filter(
+                reunion=reunion
+            ).delete()
+
+            AsistenciaReunion.objects.bulk_create([
+                AsistenciaReunion(
+                    reunion=reunion,
+                    responsable=item["responsable"],
+                    condicion=item["condicion"],
+                    motivo_ausencia=item.get(
+                        "motivo_ausencia", ""
+                    ),
+                )
+                for item in validados
+            ])
+
+        return Response({
+            "detail": "Asistencias guardadas correctamente.",
+            "total": len(validados),
+            "presentes": sum(
+                1 for item in validados
+                if item["condicion"] == "presente"
+            ),
+            "ausentes": sum(
+                1 for item in validados
+                if item["condicion"] == "ausente"
+            ),
+        })

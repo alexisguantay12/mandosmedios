@@ -1,14 +1,107 @@
-.env
-.env.local
-.env.*.local
-.venv/
-node_modules/
-.next/
+# =========================
+# Python / Django
+# =========================
+
 __pycache__/
-*.pyc
-*.sqlite3
-staticfiles/
-playwright-report/
-test-results/
-.ruff_cache/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+ENV/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Django
 *.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Cache / tooling
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Node / Next.js
+# =========================
+
+node_modules/
+
+.next/
+out/
+dist/
+build/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next
+.vercel/
+
+# =========================
+# IDE / Editor
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+# Sistema operativo
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# Archivos temporales
+# =========================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# =========================
+# Backups / dumps
+# =========================
+
+*.bak
+*.backup
+*.sql
+*.dump
+
+# =========================
+# Logs
+# =========================
+
+logs/
+*.log
+
+# =========================
+# Certificados / claves
+# =========================
+
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# =========================
+# Archivos sensibles locales
+# =========================
+
+secrets/
+credentials/

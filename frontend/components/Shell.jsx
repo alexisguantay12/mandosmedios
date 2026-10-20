@@ -8,6 +8,7 @@ import {
   LogOut,
   UserRound,
   ShieldCheck,
+  CalendarDays,
 } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { Avatar, ErrorMessage, Loading } from "./UI";
@@ -59,6 +60,13 @@ export default function Shell({ children }) {
           >
             <UserRound size={20} />
             <span>Mis temas</span>
+          </Link>
+          <Link
+            href="/reuniones"
+            className={path.startsWith("/reuniones") ? "active" : ""}
+          >
+            <CalendarDays size={20} />
+            <span>Reuniones</span>
           </Link>
         </nav>
         <div className="sidebar-bottom">

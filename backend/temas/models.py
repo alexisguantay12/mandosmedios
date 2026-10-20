@@ -78,20 +78,97 @@ class Estado(models.Model):
         return self.nombre
 
 
-class Reunion(models.Model):
-    """Ancla mínima para vincular comentarios y eventos en una futura versión."""
 
-    titulo = models.CharField(max_length=200)
+class Reunion(models.Model):
+    class EstadoMinuta(models.TextChoices):
+        BORRADOR = "borrador", "Borrador"
+        CONFIRMADA = "confirmada", "Confirmada"
+
+    titulo = models.CharField(
+        max_length=200,
+        default="Reunión Miércoles"
+    )
+
     fecha = models.DateTimeField()
+
     moderador = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="reuniones_moderadas",
     )
 
+    hora_inicio = models.TimeField(default="09:00")
+    hora_fin = models.TimeField(default="12:00")
+
+    estado_minuta = models.CharField(
+        max_length=12,
+        choices=EstadoMinuta.choices,
+        default=EstadoMinuta.BORRADOR
+    )
+
+    observaciones = models.TextField(blank=True)
+
+    minuta_contenido = models.JSONField(
+        null=True,
+        blank=True
+    )
+
+    fecha_confirmacion = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
     class Meta:
+        ordering = ["-fecha", "-id"]
         verbose_name = "reunión"
         verbose_name_plural = "reuniones"
+
+    def __str__(self):
+        return f"{self.titulo} - {self.fecha:%d/%m/%Y}"
+
+
+class AsistenciaReunion(models.Model):
+    class Condicion(models.TextChoices):
+        SIN_REGISTRAR = "sin_registrar", "Sin registrar"
+        PRESENTE = "presente", "Presente"
+        AUSENTE = "ausente", "Ausente"
+
+    reunion = models.ForeignKey(
+        Reunion,
+        on_delete=models.CASCADE,
+        related_name="asistencias"
+    )
+
+    responsable = models.ForeignKey(
+        Responsable,
+        on_delete=models.PROTECT,
+        related_name="asistencias_reuniones"
+    )
+
+    condicion = models.CharField(
+        max_length=15,
+        choices=Condicion.choices,
+        default=Condicion.SIN_REGISTRAR,
+    )
+
+    motivo_ausencia = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["responsable__nombre"]
+        verbose_name = "asistencia a reunión"
+        verbose_name_plural = "asistencias a reuniones"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["reunion", "responsable"],
+                name="asistencia_unica_por_reunion"
+            )
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.responsable.nombre} - "
+            f"{self.get_condicion_display()}"
+        )
 
 
 class Tema(models.Model):
@@ -140,17 +217,47 @@ class Tema(models.Model):
 
 
 class Comentario(models.Model):
-    tema = models.ForeignKey(Tema, on_delete=models.PROTECT, related_name="comentarios")
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+
+    class Tipo(models.TextChoices):
+        COMENTARIO = "comentario", "Comentario"
+        SOLUCION_PROPUESTA = "solucion", "Solución propuesta"
+        ACUERDO = "acuerdo", "Acuerdo"
+        SEGUIMIENTO = "seguimiento", "Seguimiento"
+
+    tema = models.ForeignKey(
+        Tema,
+        on_delete=models.PROTECT,
+        related_name="comentarios",
+    )
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+    )
+
     texto = models.TextField(max_length=10000)
+
+    tipo = models.CharField(
+        max_length=20,
+        choices=Tipo.choices,
+        default=Tipo.COMENTARIO,
+    )
+
     fecha = models.DateTimeField(auto_now_add=True)
+
     es_historico = models.BooleanField(default=False)
-    reunion = models.ForeignKey(Reunion, null=True, blank=True, on_delete=models.PROTECT)
+
+    reunion = models.ForeignKey(
+        Reunion,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+    )
 
     class Meta:
         ordering = ["fecha", "id"]
 
-
+        
 class ActividadTema(models.Model):
     tema = models.ForeignKey(Tema, on_delete=models.PROTECT, related_name="actividades")
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

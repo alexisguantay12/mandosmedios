@@ -125,16 +125,140 @@ class CambioEstadoSerializer(serializers.Serializer):
 
 class ComentarioSerializer(serializers.ModelSerializer):
     usuario = UsuarioSerializer(read_only=True)
+    tipo_display = serializers.CharField(
+        source="get_tipo_display",
+        read_only=True,
+    )
 
     class Meta:
         model = Comentario
-        fields = ["id", "usuario", "texto", "fecha", "es_historico"]
-        read_only_fields = ["id", "fecha", "es_historico"]
+        fields = [
+            "id",
+            "usuario",
+            "texto",
+            "tipo",
+            "tipo_display",
+            "fecha",
+            "es_historico",
+        ]
+
+        read_only_fields = [
+            "id",
+            "usuario",
+            "fecha",
+            "es_historico",
+            "tipo_display",
+        ]
 
 
+    
 class ActividadSerializer(serializers.ModelSerializer):
     usuario = UsuarioSerializer(read_only=True)
 
     class Meta:
         model = ActividadTema
         fields = ["id", "usuario", "tipo_evento", "campo", "valor_anterior", "valor_nuevo", "fecha"]
+
+
+
+ 
+
+from .models import Reunion, AsistenciaReunion
+
+
+class AsistenciaReunionSerializer(serializers.ModelSerializer):
+    responsable_nombre = serializers.CharField(
+        source="responsable.nombre",
+        read_only=True
+    )
+
+    class Meta:
+        model = AsistenciaReunion
+        fields = [
+            "id",
+            "responsable",
+            "responsable_nombre",
+            "condicion",
+            "motivo_ausencia",
+        ]
+        read_only_fields = [
+            "id",
+            "responsable_nombre",
+        ]
+
+    def validate(self, attrs):
+        condicion = attrs.get("condicion")
+        motivo = attrs.get("motivo_ausencia", "").strip()
+
+        if condicion in ("presente", "sin_registrar"):
+            attrs["motivo_ausencia"] = ""
+
+        elif condicion == "ausente":
+            attrs["motivo_ausencia"] = motivo
+
+        return attrs
+
+
+
+class ReunionSerializer(serializers.ModelSerializer):
+    moderador_nombre = serializers.SerializerMethodField()
+    asistencias = AsistenciaReunionSerializer(
+        many=True,
+        read_only=True
+    )
+
+    class Meta:
+        model = Reunion
+        fields = [
+            "id",
+            "titulo",
+            "fecha",
+            "moderador",
+            "moderador_nombre",
+            "hora_inicio",
+            "hora_fin",
+            "estado_minuta",
+            "observaciones",
+            "fecha_confirmacion",
+            "asistencias",
+        ]
+        read_only_fields = [
+            "id",
+            "moderador",
+            "moderador_nombre",
+            "estado_minuta",
+            "fecha_confirmacion",
+            "asistencias",
+        ]
+
+    def get_moderador_nombre(self, obj):
+        return (
+            obj.moderador.get_full_name()
+            or obj.moderador.username
+        )
+
+    def validate(self, attrs):
+        inicio = attrs.get(
+            "hora_inicio",
+            getattr(self.instance, "hora_inicio", None)
+        )
+        fin = attrs.get(
+            "hora_fin",
+            getattr(self.instance, "hora_fin", None)
+        )
+
+        if inicio and fin and fin <= inicio:
+            raise serializers.ValidationError({
+                "hora_fin": (
+                    "La hora de finalización debe ser "
+                    "posterior al inicio."
+                )
+            })
+
+        return attrs
+
+    def create(self, validated_data):
+        validated_data["moderador"] = (
+            self.context["request"].user
+        )
+        return super().create(validated_data)
